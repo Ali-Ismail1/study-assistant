@@ -3,9 +3,8 @@
 An AI-powered tool that analyzes lecture PDFs and returns summaries, quiz questions, and key concepts to help students study more effectively.
 
 ## Live Demo
-[https://study-assistant-xxxx.onrender.com](https://study-assistant-xxxx.onrender.com)
-
-> **Note:** Hosted on Render's free tier — first request after inactivity may take ~30 seconds to wake up. This is normal.
+https://study-assistant-production-34ec.up.railway.app/
+> **Note:** Hosted on Railway's free tier 
 
 ## Features
 - Upload any lecture PDF
