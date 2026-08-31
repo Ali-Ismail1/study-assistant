@@ -4,7 +4,17 @@ from storage.session_store import store_session_text,get_session_text
 from fastapi.middleware.cors import CORSMiddleware
 from services.ai_service import get_ai_summary , get_ai_quiz , get_ai_concepts 
 import traceback
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 app=FastAPI()
+
+
+app.mount("/static", StaticFiles(directory="static"), name="static")
+
+@app.get("/")
+def read_root():
+    return FileResponse("static/index.html")
+
 
 app.add_middleware(
     CORSMiddleware,
@@ -13,10 +23,6 @@ app.add_middleware(
     allow_methods=["*"],  # Allows POST, GET, OPTIONS, etc.
     allow_headers=["*"],
 )
-
-@app.get("/")
-def read_root():
-    return {"message": "Study Assistant API is running!"}
 
 @app.post("/upload")
 async def upload_pdf_file (file : UploadFile = File(...)):
