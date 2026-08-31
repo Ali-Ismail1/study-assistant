@@ -1,10 +1,18 @@
 from fastapi import FastAPI , Form ,UploadFile,File ,HTTPException
 from services.pdf_service import get_text
 from storage.session_store import store_session_text,get_session_text
+from fastapi.middleware.cors import CORSMiddleware
 from services.ai_service import get_ai_summary , get_ai_quiz , get_ai_concepts 
 import traceback
 app=FastAPI()
 
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Allows all origins (or specify your frontend URL)
+    allow_credentials=True,
+    allow_methods=["*"],  # Allows POST, GET, OPTIONS, etc.
+    allow_headers=["*"],
+)
 
 @app.get("/")
 def read_root():

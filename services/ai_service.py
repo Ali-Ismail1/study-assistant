@@ -37,7 +37,7 @@ def get_ai_concepts (pdf_text : str ):
             model = "gemini-3.6-flash", 
             contents = final_prompt
             )
-        return {"key_concepts ": ai_result.text}
+        return {"key_concepts": ai_result.text}
     except Exception as e:
         raise ValueError(f"Gemini API error: {str(e)}")
 

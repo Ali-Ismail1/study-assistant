@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>AI Study Assistant</title>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -79,8 +80,8 @@
 
   <main>
     <section class="upload-section">
-      <label for="pdf_file"><strong>Upload Study Material (.pdf, .docx):</strong></label><br><br>
-      <input type="file" id="pdf_file" accept=".pdf,.docx">
+      <label for="pdf_file"><strong>Upload Study Material (.pdf):</strong></label><br><br>
+      <input type="file" id="pdf_file" accept=".pdf">
     </section>
 
     <h2>Study Tools</h2>
@@ -89,19 +90,19 @@
       <div class="card">
         <h3>Summary</h3>
         <p>Get a full detailed summary on the topic.</p>
-        <button type="button">Summarise file</button>
+        <button type="button" onclick="generateSummary()">Summarise file</button>
       </div>
 
       <div class="card">
         <h3>Quizzes</h3>
         <p>Master study material using generated quiz questions.</p>
-        <button type="button">Generate Quiz</button>
+        <button type="button" onclick="generateQuiz()">Generate Quiz</button>      
       </div>
 
       <div class="card">
         <h3>Key Concepts</h3>
         <p>Grasp the main key concepts behind the study material</p>
-        <button type="button">Extract Concepts</button>
+        <button type="button" onclick="generateKeyConcepts()">Extract Concepts</button>
       </div>
     </div>
 
@@ -112,6 +113,79 @@
       </div>
     </section>
   </main>
+  <script>
+    async function uploadFile() {
+        const fileInput = document.getElementById('pdf_file');
+        if (!fileInput.files[0]) return alert("Select a file first!");
 
+        const formData = new FormData();
+        formData.append('file', fileInput.files[0]);
+
+        const response = await fetch('http://127.0.0.1:8000/upload', { method: 'POST', body: formData });
+        const data = await response.json();
+
+        return data.session_id;
+    }
+    async function generateSummary() {
+        const sessionId = await uploadFile();
+        if (!sessionId) return;
+
+        document.getElementById('result-content').innerText = "Generating summary, please wait...";
+        const formData = new FormData();
+        formData.append('session_id', sessionId);
+
+        const response = await fetch('http://127.0.0.1:8000/summary', {
+        method: 'POST',
+        body: formData
+        });
+        const data = await response.json();
+        if (!response.ok) {
+            document.getElementById('result-content').innerText = "Error: " + (data.detail || "Something went wrong.");
+            return;
+        }
+        document.getElementById('result-content').innerHTML = marked.parse(data.summary);    
+    }
+
+    async function generateQuiz() {
+        const sessionId = await uploadFile();
+        if (!sessionId) return;
+        
+        document.getElementById('result-content').innerText = "Generating Quiz, please wait...";
+        const formData = new FormData();
+        formData.append('session_id', sessionId);
+
+        const response = await fetch('http://127.0.0.1:8000/quiz', {
+        method: 'POST',
+        body: formData
+        });
+        const data = await response.json();
+        if (!response.ok) {
+            document.getElementById('result-content').innerText = "Error: " + (data.detail || "Something went wrong.");
+            return;
+        }
+        document.getElementById('result-content').innerHTML = marked.parse(data.quiz);    
+    }
+
+    async function generateKeyConcepts() {
+        const sessionId = await uploadFile();
+        if (!sessionId) return;
+
+        document.getElementById('result-content').innerText = "Generating Key Concepts, please wait...";
+        const formData = new FormData();
+        formData.append('session_id', sessionId);
+
+        const response = await fetch('http://127.0.0.1:8000/concepts', {
+        method: 'POST',
+        body: formData
+        });
+        const data = await response.json();
+        if (!response.ok) {
+            document.getElementById('result-content').innerText = "Error: " + (data.detail || "Something went wrong.");
+            return;
+        }
+        document.getElementById('result-content').innerHTML = marked.parse(data.key_concepts);    
+    }
+
+  </script>
 </body>
 </html>
